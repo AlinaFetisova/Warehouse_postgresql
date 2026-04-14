@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <style>
+        body{
+            font-family: 'Segor UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin:50px;
+        }
+        .container{
+            max-width:600px; 
+            margin:auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1{
+            color:#333;
+            text-align:center;
+        }
+        form{
+            display:flex;
+            flex-direction: column;
+            gap:10px;
+            margin-bottom: 30px;
+        }
+        input{
+            padding:10px;
+            border:1px solid #ddd; 
+            border-radius: 6px;
+        }
+        button{
+            padding: 12px;
+            background-color: #61e17e;
+            color:rgb(0, 0, 0);
+            border:none;
+            cursor:pointer;
+            font-weight: bold;
+        }
+        button:hover{
+            background-color: #07d14e;
+        }
+        ul{
+            list-style: none;
+            padding:0;
+        }
+        li{
+            background: #f9f9f9;
+            padding:15px;
+            border-bottom: 1px solid #eee; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn{
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 1px solid #dc3545;
+            padding:5px 10px;
+            border-radius: 4px;
+        }
+        .delete-btn:hover{
+            background: #dc3545;
+            color:white;
+        }
+        .out-of-stock {
+            color: #dc3545;
+            font-weight: bold; 
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Складська система</title>
+</head>
+    <body>
+        <div class="container">
+            <h1>Складський облік</h1>
+            <form action="/add" method="POST">
+                <input type="text" name="name" placeholder="Назва" required>
+                <input type="number" name="price" step="0.01" placeholder="Ціна" required>
+                <input type="number" name="quantity" placeholder="Кількість" required>
+                <button type="submit">Додати</button>
+            </form>
+            <form action="/search" method="GET" style="flex-direction: row; gap:5px;">
+                <input type="text" name="query" placeholder="Пошук за назвою...">
+                <button type="submit" style="background-color:#333; color:white;  width:100px">Знайти</button>
+                <a href="/" style="text-decoration: none; padding:10px; color:#666">Скинути</a>
+            </form>
+            
+            <hr>
+            <div class="sort-links">
+                Сортувати: 
+                <a href="/?sort=name" {% if current_sort == 'name' %} style="font-weight: bold; color: #07d14e;" {% endif %}>за назвою</a> | 
+                <a href="/?sort=price" {% if current_sort == 'price' %} style="font-weight: bold; color: #07d14e;" {% endif %}>за ціною</a>
+            </div>
+
+            <h3>Товари:</h3>
+            <ul>
+                {% for item in items %}
+                    <li>
+                        <div>
+                            <strong {% if item.quantity==0 %} class="out-of-stock" {% endif %}>
+                                {{ item.name }}
+                            </strong> — {{ item.price }} грн
+                            <br>
+                            <form action="/update/{{item.name}}" method="POST" style="display:inline; margin-top:5px;">
+                                Залишок:
+                                <input type="number" name="quantity" value="{{item.quantity}}" style="width:60px; padding:2px;">
+                                <button type="submit" style="padding: 2px 10px; background: #3f95f0d1; color: white; font-size: 12px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Оновити
+                                </button>
+                            </form>
+                        </div>
+
+                        <a href="/delete/{{ item.name }}" class="delete-btn" onclick="return confirm('Видалити {{item.name}}?')">
+                            Видалити
+                        </a>
+                    </li>
+                {% else %}
+                <li style="justify-content: center; color:#888; background: #f0f0f0; border:1px dashed #ccc;">
+                    Товарів не знайдено. Спробуйте іншу назву або натисніть "Скинути".
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="total-area">
+            <strong>Загальна вартість: {{ total }} грн</strong>
+            </div>
+
+            <div style="text-align: center; padding:20px;">
+                <a href="/report" style="text-decoration: none; background-color: #6d6d6d; color:white; padding:10px 20px; border-radius: 6px; font-weight:bold;">
+                    📄Сформувати звіт(.txt)
+                </a>
+            </div>
+
+        </div>
+    </body>
+</html>
