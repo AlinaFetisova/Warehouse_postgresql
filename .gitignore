@@ -1,5 +1,19 @@
-__pycache__/
+# Віртуальне оточення
 venv/
+.venv/
+env/
+
+# Кеш Python
+**/__pycache__/
 *.pyc
-warehouse.json
-report.txt
+
+# Локальні бази (якщо раптом завалялася sqlite)
+*.sqlite3
+
+# Налаштування редакторів кодів
+.vscode/
+.idea/
+
+# Файли системи
+.DS_Store
+Thumbs.db
